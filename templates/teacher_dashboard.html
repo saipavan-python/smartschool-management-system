@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Teacher Dashboard - SmartSchool</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+body {
+  background-color: #f4f6f9;
+  font-family: 'Segoe UI', sans-serif;
+}
+.card {
+  margin-bottom: 20px;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+</style>
+</head>
+
+<body>
+
+<nav class="navbar navbar-dark bg-primary">
+  <div class="container-fluid">
+    <span class="navbar-brand">👩‍🏫 Teacher Dashboard</span>
+    <a href="/logout" class="btn btn-light btn-sm">Logout</a>
+  </div>
+</nav>
+
+<div class="container mt-4">
+
+<!-- FLASH MESSAGE -->
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    {% for msg in messages %}
+      <div class="alert alert-success alert-dismissible fade show">
+        {{ msg }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<!-- TEACHER INFO -->
+<div class="alert alert-info">
+  <b>Subject:</b> {{ teacher_subject }}
+</div>
+
+<!-- ===================== NEW: UPLOAD NOTES ===================== -->
+<div class="card">
+  <div class="card-header bg-info text-white">
+    📚 Upload Study Notes
+  </div>
+  <div class="card-body">
+
+    <form method="POST"
+          action="/teacher/upload_notes"
+          enctype="multipart/form-data">
+
+      <div class="row">
+
+        <div class="col-md-3">
+          <label>Class</label>
+          <select name="class_name" class="form-control" required>
+            <option value="">Select</option>
+            <option>6-A</option><option>6-B</option>
+            <option>7-A</option><option>7-B</option>
+            <option>8-A</option><option>8-B</option>
+            <option>9-A</option><option>9-B</option>
+            <option>10-A</option><option>10-B</option>
+          </select>
+        </div>
+
+        <div class="col-md-3">
+          <label>Subject</label>
+          <input type="text"
+                 name="subject"
+                 class="form-control"
+                 value="{{ teacher_subject }}"
+                 readonly>
+        </div>
+
+        <div class="col-md-3">
+          <label>Chapter</label>
+          <input type="text"
+                 name="chapter"
+                 class="form-control"
+                 placeholder="Enter Chapter Name"
+                 required>
+        </div>
+
+        <div class="col-md-3">
+          <label>Upload File</label>
+          <input type="file"
+                 name="file"
+                 class="form-control"
+                 required>
+        </div>
+
+      </div>
+
+      <button class="btn btn-info mt-3 w-100">
+        Upload Notes
+      </button>
+
+    </form>
+
+  </div>
+</div>
+<!-- ===================== END NEW SECTION ===================== -->
+
+<!-- ADD MARKS -->
+<div class="card">
+  <div class="card-header bg-success text-white">
+    📊 Upload Student Marks
+  </div>
+  <div class="card-body">
+    <form method="POST" action="/teacher/add_marks">
+      <div class="row">
+        <div class="col-md-4">
+          <label>Student</label>
+          <select name="student_id" class="form-control" required>
+            <option value="">Select Student</option>
+            {% for s in students %}
+              <option value="{{ s.student_id }}">
+                {{ s.student_id }} - {{ s.name }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="col-md-4">
+          <label>Subject</label>
+          <input type="text" class="form-control" value="{{ teacher_subject }}" readonly>
+        </div>
+
+        <div class="col-md-4">
+          <label>Marks</label>
+          <input type="number" name="marks" class="form-control" required min="0" max="100">
+        </div>
+      </div>
+
+      <button class="btn btn-success mt-3 w-100">Save Marks</button>
+    </form>
+  </div>
+</div>
+
+<!-- ATTENDANCE -->
+<div class="card">
+  <div class="card-header bg-warning">
+    🧾 Student Attendance
+  </div>
+  <div class="card-body">
+    <form method="POST" action="/teacher/add_attendance">
+      <div class="row">
+        <div class="col-md-4">
+          <label>Student ID</label>
+          <input type="text" name="student_id" class="form-control" required>
+        </div>
+
+        <div class="col-md-4">
+          <label>Date</label>
+          <input type="date" name="date" class="form-control" required>
+        </div>
+
+        <div class="col-md-4">
+          <label>Status</label>
+          <select name="status" class="form-control" required>
+            <option value="">Select</option>
+            <option>Present</option>
+            <option>Absent</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="btn btn-warning mt-3 w-100">Mark Attendance</button>
+    </form>
+  </div>
+</div>
+
+<!-- ANNOUNCEMENTS -->
+<div class="card">
+  <div class="card-header bg-dark text-white">
+    📢 Send Announcement to Class
+  </div>
+  <div class="card-body">
+    <form method="POST" action="/teacher/send_announcement">
+      <div class="row">
+        <div class="col-md-4">
+          <label>Class</label>
+          <select name="class_name" class="form-control" required>
+            <option value="">Select</option>
+            <option>6-A</option><option>6-B</option>
+            <option>7-A</option><option>7-B</option>
+            <option>8-A</option><option>8-B</option>
+            <option>9-A</option><option>9-B</option>
+            <option>10-A</option><option>10-B</option>
+          </select>
+        </div>
+
+        <div class="col-md-6">
+          <label>Message</label>
+          <input type="text" name="message" class="form-control" required>
+        </div>
+
+        <div class="col-md-2">
+          <label>&nbsp;</label>
+          <button class="btn btn-dark w-100">Send</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- WEEKLY TEST -->
+<div class="card">
+  <div class="card-header bg-secondary text-white">
+    📅 Upload Weekly Test Marks
+  </div>
+  <div class="card-body">
+    <form method="POST" action="/teacher/add_weekly_test">
+      <div class="row">
+        <div class="col-md-4">
+          <label>Student</label>
+          <select name="student_id" class="form-control" required>
+            <option value="">Select Student</option>
+            {% for s in students %}
+              <option value="{{ s.student_id }}">
+                {{ s.student_id }} - {{ s.name }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="col-md-4">
+          <label>Subject</label>
+          <input type="text" class="form-control" value="{{ teacher_subject }}" readonly>
+        </div>
+
+        <div class="col-md-4">
+          <label>Marks</label>
+          <input type="number" name="marks" class="form-control" required min="0" max="100">
+        </div>
+      </div>
+
+      <button class="btn btn-secondary mt-3 w-100">
+        Save Weekly Test Marks
+      </button>
+    </form>
+  </div>
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

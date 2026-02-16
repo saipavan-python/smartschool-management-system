@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Parent Dashboard - SmartSchool</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+body{
+  background:linear-gradient(135deg,#eef2ff,#f8fafc);
+  font-family:'Segoe UI',sans-serif;
+}
+.card{
+  border-radius:16px;
+  box-shadow:0 8px 20px rgba(0,0,0,.08);
+  margin-bottom:20px;
+}
+</style>
+</head>
+
+<body>
+
+<nav class="navbar navbar-dark bg-success">
+  <div class="container-fluid">
+    <span class="navbar-brand">👨‍👩‍👧 Parent Dashboard</span>
+    <a href="/logout" class="btn btn-light btn-sm">Logout</a>
+  </div>
+</nav>
+
+<div class="container mt-4">
+
+<!-- STUDENT INFO -->
+<div class="card p-4">
+  <h4>{{ student_name }}</h4>
+  <p class="text-muted mb-0">Class {{ student_class }}</p>
+</div>
+
+<!-- ATTENDANCE -->
+<div class="card p-4">
+  <h5>🧾 Attendance</h5>
+  <div class="progress mt-2">
+    <div class="progress-bar bg-success" style="width: {{ attendance }}%">
+      {{ attendance }}%
+    </div>
+  </div>
+</div>
+
+<!-- MARKS -->
+<div class="card p-4">
+  <h5>📊 Subject Marks</h5>
+  <table class="table table-bordered text-center">
+    <thead class="table-dark">
+      <tr>
+        <th>Subject</th>
+        <th>Total</th>
+        <th>Grade</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for m in marks %}
+      <tr>
+        <td>{{ m.subject }}</td>
+        <td>{{ m.total }}</td>
+        <td>
+          {% if m.total >= 90 %}
+            <span class="badge bg-success">A+</span>
+          {% elif m.total >= 75 %}
+            <span class="badge bg-primary">A</span>
+          {% elif m.total >= 60 %}
+            <span class="badge bg-warning">B</span>
+          {% else %}
+            <span class="badge bg-danger">C</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="3" class="text-muted">No marks available</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- WEEKLY TESTS -->
+<div class="card p-4">
+  <h5>📅 Weekly Test Performance</h5>
+  <table class="table table-bordered text-center">
+    <thead class="table-dark">
+      <tr>
+        <th>Subject</th>
+        <th>Average</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for w in weekly_avg %}
+      <tr>
+        <td>{{ w.subject }}</td>
+        <td>{{ w.avg_marks }}</td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="2" class="text-muted">No weekly test data</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- ANNOUNCEMENTS -->
+<div class="card p-4">
+  <h5>📢 School Announcements</h5>
+
+  <ul class="list-group">
+
+    {% for a in announcements %}
+    <li class="list-group-item">
+
+      <!-- Highlight holidays in red -->
+      {% if "Holiday on" in a.message %}
+        <strong class="text-danger">🎉 {{ a.message }}</strong>
+      {% else %}
+        {{ a.message }}
+      {% endif %}
+
+      {% if a.created_at %}
+        <small class="text-muted d-block">
+          {{ a.created_at }}
+        </small>
+      {% endif %}
+
+    </li>
+    {% else %}
+    <li class="list-group-item text-muted">
+      No announcements yet
+    </li>
+    {% endfor %}
+
+  </ul>
+</div>
+
+</div>
+
+</body>
+</html>

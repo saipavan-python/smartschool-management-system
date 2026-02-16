@@ -1,0 +1,18 @@
+# Environment file
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+
+# VS Code
+.vscode/
+
+# Mac
+.DS_Store
+
+# Database files
+*.db
+
+# Uploaded files
+static/notes/*
